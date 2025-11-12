@@ -12,7 +12,6 @@ Open-source financial independence calculators to help you plan your path to fin
 
 Visit the calculators at: [https://amariscal88.github.io/fire-calculators/](https://amariscal88.github.io/fire-calculators/)
 
-(Replace amariscal88 with your actual GitHub username)
 
 ## 💻 Usage
 
