@@ -364,45 +364,20 @@
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
               <div className="max-w-6xl mx-auto">
                 <header className="text-center mb-8">
-                  <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
-                    FIRE Calculators
-                  </h1>
-                  <p className="text-gray-600 text-lg">
-                    Plan your path to financial independence
-                  </p>
+                  <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">FIRE Calculators</h1>
+                  <p className="text-gray-600 text-lg">Plan your path to financial independence</p>
                 </header>
 
                 <div className="flex flex-wrap gap-2 mb-6 bg-white rounded-lg p-2 shadow-md">
-                  <button
-                    onClick={() => setActiveTab('retirement')}
-                    className={`flex-1 min-w-fit px-4 py-3 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${
-                      activeTab === 'retirement'
-                        ? 'bg-blue-500 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
+                  <button onClick={() => setActiveTab('retirement')} className={`flex-1 min-w-fit px-4 py-3 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${activeTab === 'retirement' ? 'bg-blue-500 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
                     <Calculator size={20} />
                     Retirement
                   </button>
-                  <button
-                    onClick={() => setActiveTab('fire')}
-                    className={`flex-1 min-w-fit px-4 py-3 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${
-                      activeTab === 'fire'
-                        ? 'bg-blue-500 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
+                  <button onClick={() => setActiveTab('fire')} className={`flex-1 min-w-fit px-4 py-3 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${activeTab === 'fire' ? 'bg-blue-500 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
                     <TrendingUp size={20} />
                     FIRE
                   </button>
-                  <button
-                    onClick={() => setActiveTab('coast')}
-                    className={`flex-1 min-w-fit px-4 py-3 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${
-                      activeTab === 'coast'
-                        ? 'bg-blue-500 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
+                  <button onClick={() => setActiveTab('coast')} className={`flex-1 min-w-fit px-4 py-3 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${activeTab === 'coast' ? 'bg-blue-500 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
                     <Anchor size={20} />
                     Coast FIRE
                   </button>
@@ -414,44 +389,141 @@
                     <div className="grid lg:grid-cols-2 gap-6 mb-6">
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Expected Return Rate
-                          </label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Current Age</label>
+                          <input type="text" value={formatNumberWithCommas(retirementInputs.currentAge)} onChange={handleInputChange(setRetirementInputs, 'currentAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Target Retirement Age</label>
+                          <input type="text" value={formatNumberWithCommas(retirementInputs.retirementAge)} onChange={handleInputChange(setRetirementInputs, 'retirementAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Current Invested</label>
                           <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(fireInputs.returnRate)}
-                              onChange={handleInputChange(setFireInputs, 'returnRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.currentSavings)} onChange={handleInputChange(setRetirementInputs, 'currentSavings')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Contribution</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.monthlyContribution)} onChange={handleInputChange(setRetirementInputs, 'monthlyContribution')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Annual Spending in Retirement</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.annualSpending)} onChange={handleInputChange(setRetirementInputs, 'annualSpending')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.returnRate)} onChange={handleInputChange(setRetirementInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Safe Withdrawal Rate
-                          </label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Safe Withdrawal Rate</label>
                           <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(fireInputs.withdrawalRate)}
-                              onChange={handleInputChange(setFireInputs, 'withdrawalRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.withdrawalRate)} onChange={handleInputChange(setRetirementInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Inflation Rate
-                          </label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
                           <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(fireInputs.inflationRate)}
-                              onChange={handleInputChange(setFireInputs, 'inflationRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.inflationRate)} onChange={handleInputChange(setRetirementInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">Results</h3>
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Projected Retirement Savings</p>
+                            <p className="text-3xl font-bold text-blue-600">{formatCurrency(retirementResults.futureValue)}</p>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Inflation-Adjusted Value</p>
+                            <p className="text-2xl font-bold text-purple-600">{formatCurrency(retirementResults.inflationAdjustedValue)}</p>
+                            <p className="text-xs text-gray-500 mt-1">In today's dollars</p>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Total Contributions</p>
+                            <p className="text-2xl font-bold text-gray-800">{formatCurrency(retirementResults.totalContributions)}</p>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Investment Gains</p>
+                            <p className="text-2xl font-bold text-green-600">{formatCurrency(retirementResults.investmentGains)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-6 shadow-lg">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">Growth Projection</h3>
+                      <ChartComponent chartRef={retirementChartRef} type="line" data={retirementChartData} options={chartOptions} />
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'fire' && (
+                  <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6">FIRE Calculator</h2>
+                    <div className="grid lg:grid-cols-2 gap-6 mb-6">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Current Age</label>
+                          <input type="text" value={formatNumberWithCommas(fireInputs.currentAge)} onChange={handleInputChange(setFireInputs, 'currentAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Current Savings</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(fireInputs.currentSavings)} onChange={handleInputChange(setFireInputs, 'currentSavings')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Annual Income</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(fireInputs.annualIncome)} onChange={handleInputChange(setFireInputs, 'annualIncome')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Annual Expenses</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(fireInputs.annualExpenses)} onChange={handleInputChange(setFireInputs, 'annualExpenses')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Savings Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(fireInputs.savingsRate)} onChange={handleInputChange(setFireInputs, 'savingsRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(fireInputs.returnRate)} onChange={handleInputChange(setFireInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Safe Withdrawal Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(fireInputs.withdrawalRate)} onChange={handleInputChange(setFireInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(fireInputs.inflationRate)} onChange={handleInputChange(setFireInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
@@ -461,41 +533,28 @@
                         <div className="space-y-4">
                           <div className="bg-white rounded-lg p-4 shadow">
                             <p className="text-sm text-gray-600 mb-1">FIRE Number</p>
-                            <p className="text-3xl font-bold text-blue-600">
-                              {formatCurrency(fireResults.fireNumber)}
-                            </p>
+                            <p className="text-3xl font-bold text-blue-600">{formatCurrency(fireResults.fireNumber)}</p>
                           </div>
                           <div className="bg-white rounded-lg p-4 shadow">
                             <p className="text-sm text-gray-600 mb-1">Inflation-Adjusted FIRE Number</p>
-                            <p className="text-2xl font-bold text-purple-600">
-                              {formatCurrency(fireResults.inflationAdjustedFireNumber)}
-                            </p>
+                            <p className="text-2xl font-bold text-purple-600">{formatCurrency(fireResults.inflationAdjustedFireNumber)}</p>
                             <p className="text-xs text-gray-500 mt-1">In today's dollars</p>
                           </div>
                           <div className="bg-white rounded-lg p-4 shadow">
                             <p className="text-sm text-gray-600 mb-1">Years to FIRE</p>
-                            <p className="text-2xl font-bold text-gray-800">
-                              {fireResults.yearsToFIRE} years
-                            </p>
+                            <p className="text-2xl font-bold text-gray-800">{fireResults.yearsToFIRE} years</p>
                           </div>
                           <div className="bg-white rounded-lg p-4 shadow">
                             <p className="text-sm text-gray-600 mb-1">FIRE Age</p>
-                            <p className="text-2xl font-bold text-gray-800">
-                              {fireResults.fireAge} years old
-                            </p>
+                            <p className="text-2xl font-bold text-gray-800">{fireResults.fireAge} years old</p>
                           </div>
                           <div className="bg-white rounded-lg p-4 shadow">
                             <p className="text-sm text-gray-600 mb-1">Current Progress</p>
                             <div className="flex items-center gap-2">
                               <div className="flex-1 bg-gray-200 rounded-full h-3">
-                                <div
-                                  className="bg-green-500 h-3 rounded-full transition-all"
-                                  style={{ width: `${Math.min(fireResults.currentProgress, 100)}%` }}
-                                />
+                                <div className="bg-green-500 h-3 rounded-full transition-all" style={{ width: `${Math.min(fireResults.currentProgress, 100)}%` }}></div>
                               </div>
-                              <span className="text-lg font-bold text-gray-800">
-                                {fireResults.currentProgress.toFixed(1)}%
-                              </span>
+                              <span className="text-lg font-bold text-gray-800">{fireResults.currentProgress.toFixed(1)}%</span>
                             </div>
                           </div>
                         </div>
@@ -503,12 +562,7 @@
                     </div>
                     <div className="bg-white rounded-lg p-6 shadow-lg">
                       <h3 className="text-lg font-bold text-gray-800 mb-4">Path to FIRE</h3>
-                      <ChartComponent 
-                        chartRef={fireChartRef}
-                        type="line"
-                        data={fireChartData}
-                        options={chartOptions}
-                      />
+                      <ChartComponent chartRef={fireChartRef} type="line" data={fireChartData} options={chartOptions} />
                     </div>
                   </div>
                 )}
@@ -519,108 +573,52 @@
                     <div className="grid lg:grid-cols-2 gap-6 mb-6">
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Current Age
-                          </label>
-                          <input
-                            type="text"
-                            value={formatNumberWithCommas(coastInputs.currentAge)}
-                            onChange={handleInputChange(setCoastInputs, 'currentAge')}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Current Age</label>
+                          <input type="text" value={formatNumberWithCommas(coastInputs.currentAge)} onChange={handleInputChange(setCoastInputs, 'currentAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Target Retirement Age
-                          </label>
-                          <input
-                            type="text"
-                            value={formatNumberWithCommas(coastInputs.retirementAge)}
-                            onChange={handleInputChange(setCoastInputs, 'retirementAge')}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Target Retirement Age</label>
+                          <input type="text" value={formatNumberWithCommas(coastInputs.retirementAge)} onChange={handleInputChange(setCoastInputs, 'retirementAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Current Invested
-                          </label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Current Invested</label>
                           <div className="relative">
                             <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(coastInputs.currentSavings)}
-                              onChange={handleInputChange(setCoastInputs, 'currentSavings')}
-                              className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <input type="text" value={formatNumberWithCommas(coastInputs.currentSavings)} onChange={handleInputChange(setCoastInputs, 'currentSavings')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Monthly Contribution
-                          </label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Contribution</label>
                           <div className="relative">
                             <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(coastInputs.monthlyContribution)}
-                              onChange={handleInputChange(setCoastInputs, 'monthlyContribution')}
-                              className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <input type="text" value={formatNumberWithCommas(coastInputs.monthlyContribution)} onChange={handleInputChange(setCoastInputs, 'monthlyContribution')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Annual Spending in Retirement
-                          </label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Annual Spending in Retirement</label>
                           <div className="relative">
                             <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(coastInputs.annualSpending)}
-                              onChange={handleInputChange(setCoastInputs, 'annualSpending')}
-                              className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <input type="text" value={formatNumberWithCommas(coastInputs.annualSpending)} onChange={handleInputChange(setCoastInputs, 'annualSpending')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Expected Return Rate
-                          </label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return Rate</label>
                           <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(coastInputs.returnRate)}
-                              onChange={handleInputChange(setCoastInputs, 'returnRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <input type="text" value={formatNumberWithCommas(coastInputs.returnRate)} onChange={handleInputChange(setCoastInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Safe Withdrawal Rate
-                          </label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Safe Withdrawal Rate</label>
                           <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(coastInputs.withdrawalRate)}
-                              onChange={handleInputChange(setCoastInputs, 'withdrawalRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <input type="text" value={formatNumberWithCommas(coastInputs.withdrawalRate)} onChange={handleInputChange(setCoastInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Inflation Rate
-                          </label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
                           <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(coastInputs.inflationRate)}
-                              onChange={handleInputChange(setCoastInputs, 'inflationRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <input type="text" value={formatNumberWithCommas(coastInputs.inflationRate)} onChange={handleInputChange(setCoastInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
@@ -630,58 +628,37 @@
                         <div className="space-y-4">
                           <div className="bg-white rounded-lg p-4 shadow">
                             <p className="text-sm text-gray-600 mb-1">Coast FIRE Number</p>
-                            <p className="text-3xl font-bold text-blue-600">
-                              {formatCurrency(coastResults.coastFireNumber)}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              Amount needed today to coast to retirement
-                            </p>
+                            <p className="text-3xl font-bold text-blue-600">{formatCurrency(coastResults.coastFireNumber)}</p>
+                            <p className="text-xs text-gray-500 mt-1">Amount needed today to coast to retirement</p>
                           </div>
                           <div className="bg-white rounded-lg p-4 shadow">
                             <p className="text-sm text-gray-600 mb-1">Full FIRE Number</p>
-                            <p className="text-2xl font-bold text-gray-800">
-                              {formatCurrency(coastResults.fireNumber)}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              Total needed at retirement age
-                            </p>
+                            <p className="text-2xl font-bold text-gray-800">{formatCurrency(coastResults.fireNumber)}</p>
+                            <p className="text-xs text-gray-500 mt-1">Total needed at retirement age</p>
                           </div>
                           <div className="bg-white rounded-lg p-4 shadow">
                             <p className="text-sm text-gray-600 mb-1">Inflation-Adjusted FIRE Number</p>
-                            <p className="text-2xl font-bold text-purple-600">
-                              {formatCurrency(coastResults.inflationAdjustedFireNumber)}
-                            </p>
+                            <p className="text-2xl font-bold text-purple-600">{formatCurrency(coastResults.inflationAdjustedFireNumber)}</p>
                             <p className="text-xs text-gray-500 mt-1">In today's dollars</p>
                           </div>
                           {!coastResults.hasReachedCoastFIRE && coastResults.yearsToCoastFire < 100 && (
                             <div className="bg-white rounded-lg p-4 shadow">
                               <p className="text-sm text-gray-600 mb-1">Years to Coast FIRE</p>
-                              <p className="text-2xl font-bold text-orange-600">
-                                {coastResults.yearsToCoastFire} years
-                              </p>
-                              <p className="text-xs text-gray-500 mt-1">
-                                At age {coastResults.coastFireAge}
-                              </p>
+                              <p className="text-2xl font-bold text-orange-600">{coastResults.yearsToCoastFire} years</p>
+                              <p className="text-xs text-gray-500 mt-1">At age {coastResults.coastFireAge}</p>
                             </div>
                           )}
                           <div className={`rounded-lg p-4 shadow ${coastResults.hasReachedCoastFIRE ? 'bg-green-100 border-2 border-green-400' : 'bg-white'}`}>
                             <p className="text-sm text-gray-600 mb-1">Status</p>
-                            <p className={`text-2xl font-bold ${coastResults.hasReachedCoastFIRE ? 'text-green-600' : 'text-orange-600'}`}>
-                              {coastResults.hasReachedCoastFIRE ? '🎉 You reached Coast FIRE!' : 'Not yet at Coast FIRE'}
-                            </p>
+                            <p className={`text-2xl font-bold ${coastResults.hasReachedCoastFIRE ? 'text-green-600' : 'text-orange-600'}`}>{coastResults.hasReachedCoastFIRE ? '🎉 You reached Coast FIRE!' : 'Not yet at Coast FIRE'}</p>
                           </div>
                           <div className="bg-white rounded-lg p-4 shadow">
                             <p className="text-sm text-gray-600 mb-1">Progress to Coast FIRE</p>
                             <div className="flex items-center gap-2">
                               <div className="flex-1 bg-gray-200 rounded-full h-3">
-                                <div
-                                  className="bg-blue-500 h-3 rounded-full transition-all"
-                                  style={{ width: `${Math.min(coastResults.percentToCoastFIRE, 100)}%` }}
-                                />
+                                <div className="bg-blue-500 h-3 rounded-full transition-all" style={{ width: `${Math.min(coastResults.percentToCoastFIRE, 100)}%` }}></div>
                               </div>
-                              <span className="text-lg font-bold text-gray-800">
-                                {coastResults.percentToCoastFIRE.toFixed(1)}%
-                              </span>
+                              <span className="text-lg font-bold text-gray-800">{coastResults.percentToCoastFIRE.toFixed(1)}%</span>
                             </div>
                           </div>
                         </div>
@@ -689,12 +666,7 @@
                     </div>
                     <div className="bg-white rounded-lg p-6 shadow-lg">
                       <h3 className="text-lg font-bold text-gray-800 mb-4">Coast FIRE Projection</h3>
-                      <ChartComponent 
-                        chartRef={coastChartRef}
-                        type="line"
-                        data={coastChartData}
-                        options={chartOptions}
-                      />
+                      <ChartComponent chartRef={coastChartRef} type="line" data={coastChartData} options={chartOptions} />
                     </div>
                   </div>
                 )}
@@ -711,226 +683,4 @@
         ReactDOM.render(<FinanceCalculators />, document.getElementById('root'));
     </script>
 </body>
-</html>-1">
-                            Current Age
-                          </label>
-                          <input
-                            type="text"
-                            value={formatNumberWithCommas(retirementInputs.currentAge)}
-                            onChange={handleInputChange(setRetirementInputs, 'currentAge')}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Target Retirement Age
-                          </label>
-                          <input
-                            type="text"
-                            value={formatNumberWithCommas(retirementInputs.retirementAge)}
-                            onChange={handleInputChange(setRetirementInputs, 'retirementAge')}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Current Invested
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(retirementInputs.currentSavings)}
-                              onChange={handleInputChange(setRetirementInputs, 'currentSavings')}
-                              className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Monthly Contribution
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(retirementInputs.monthlyContribution)}
-                              onChange={handleInputChange(setRetirementInputs, 'monthlyContribution')}
-                              className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Annual Spending in Retirement
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(retirementInputs.annualSpending)}
-                              onChange={handleInputChange(setRetirementInputs, 'annualSpending')}
-                              className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Expected Return Rate
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(retirementInputs.returnRate)}
-                              onChange={handleInputChange(setRetirementInputs, 'returnRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                            <span className="absolute right-3 top-2 text-gray-500">%</span>
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Safe Withdrawal Rate
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(retirementInputs.withdrawalRate)}
-                              onChange={handleInputChange(setRetirementInputs, 'withdrawalRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                            <span className="absolute right-3 top-2 text-gray-500">%</span>
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Inflation Rate
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(retirementInputs.inflationRate)}
-                              onChange={handleInputChange(setRetirementInputs, 'inflationRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                            <span className="absolute right-3 top-2 text-gray-500">%</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">Results</h3>
-                        <div className="space-y-4">
-                          <div className="bg-white rounded-lg p-4 shadow">
-                            <p className="text-sm text-gray-600 mb-1">Projected Retirement Savings</p>
-                            <p className="text-3xl font-bold text-blue-600">
-                              {formatCurrency(retirementResults.futureValue)}
-                            </p>
-                          </div>
-                          <div className="bg-white rounded-lg p-4 shadow">
-                            <p className="text-sm text-gray-600 mb-1">Inflation-Adjusted Value</p>
-                            <p className="text-2xl font-bold text-purple-600">
-                              {formatCurrency(retirementResults.inflationAdjustedValue)}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">In today's dollars</p>
-                          </div>
-                          <div className="bg-white rounded-lg p-4 shadow">
-                            <p className="text-sm text-gray-600 mb-1">Total Contributions</p>
-                            <p className="text-2xl font-bold text-gray-800">
-                              {formatCurrency(retirementResults.totalContributions)}
-                            </p>
-                          </div>
-                          <div className="bg-white rounded-lg p-4 shadow">
-                            <p className="text-sm text-gray-600 mb-1">Investment Gains</p>
-                            <p className="text-2xl font-bold text-green-600">
-                              {formatCurrency(retirementResults.investmentGains)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-lg p-6 shadow-lg">
-                      <h3 className="text-lg font-bold text-gray-800 mb-4">Growth Projection</h3>
-                      <ChartComponent 
-                        chartRef={retirementChartRef}
-                        type="line"
-                        data={retirementChartData}
-                        options={chartOptions}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'fire' && (
-                  <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">FIRE Calculator</h2>
-                    <div className="grid lg:grid-cols-2 gap-6 mb-6">
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Current Age
-                          </label>
-                          <input
-                            type="text"
-                            value={formatNumberWithCommas(fireInputs.currentAge)}
-                            onChange={handleInputChange(setFireInputs, 'currentAge')}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Current Savings
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(fireInputs.currentSavings)}
-                              onChange={handleInputChange(setFireInputs, 'currentSavings')}
-                              className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Annual Income
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(fireInputs.annualIncome)}
-                              onChange={handleInputChange(setFireInputs, 'annualIncome')}
-                              className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Annual Expenses
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(fireInputs.annualExpenses)}
-                              onChange={handleInputChange(setFireInputs, 'annualExpenses')}
-                              className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Savings Rate
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              value={formatNumberWithCommas(fireInputs.savingsRate)}
-                              onChange={handleInputChange(setFireInputs, 'savingsRate')}
-                              className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                            <span className="absolute right-3 top-2 text-gray-500">%</span>
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb
+</html>
