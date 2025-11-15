@@ -1,4 +1,4 @@
-# FIRE Calculators 🧮
+# Freedom Calculators 🧮
 
 Open-source financial independence calculators to help you plan your path to financial freedom.
 
