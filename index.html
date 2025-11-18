@@ -67,6 +67,7 @@
 
         const FinanceCalculators = () => {
           const [activeTab, setActiveTab] = useState('retirement');
+          const [showFireTable, setShowFireTable] = useState(false);
           const retirementChartRef = useRef(null);
           const fireChartRef = useRef(null);
           const coastChartRef = useRef(null);
