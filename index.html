@@ -1,27 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIRE Calculators - Open Source Financial Tools</title>
-    <title>Freedom Calculators - Open Source Financial Tools</title>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-@@ -85,14 +85,37 @@
-const [fireInputs, setFireInputs] = useState({
-currentAge: 30,
-currentNetWorth: 100000,
-            annualIncome: 80000,
-            annualExpenses: 40000,
-            annualSavings: 40000,
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        const Calculator = ({ size }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="4" y="2" width="16" height="20" rx="2"/>
+                <line x1="8" y1="6" x2="16" y2="6"/>
+                <line x1="8" y1="10" x2="16" y2="10"/>
+                <line x1="8" y1="14" x2="16" y2="14"/>
+                <line x1="8" y1="18" x2="16" y2="18"/>
+            </svg>
+        );
+        
+        const TrendingUp = ({ size }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                <polyline points="17 6 23 6 23 12"/>
+            </svg>
+        );
+        
+        const Anchor = ({ size }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="5" r="3"/>
+                <line x1="12" y1="22" x2="12" y2="8"/>
+                <path d="M5 12H2a10 10 0 0 0 20 0h-3"/>
+            </svg>
+        );
+
+        const ChartComponent = ({ chartRef, type, data, options }) => {
+          useEffect(() => {
+            if (chartRef.current) {
+              const ctx = chartRef.current.getContext('2d');
+              
+              if (chartRef.current.chart) {
+                chartRef.current.chart.destroy();
+              }
+              
+              chartRef.current.chart = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: {
+                  ...options,
+                  responsive: true,
+                  maintainAspectRatio: true,
+                }
+              });
+            }
+          }, [data, type, options]);
+
+          return <canvas ref={chartRef} />;
+        };
+
+        const FinanceCalculators = () => {
+          const [activeTab, setActiveTab] = useState('retirement');
+          const retirementChartRef = useRef(null);
+          const fireChartRef = useRef(null);
+          const coastChartRef = useRef(null);
+
+          const [retirementInputs, setRetirementInputs] = useState({
+            currentAge: 30,
+            retirementAge: 65,
+            currentSavings: 50000,
+            monthlyContribution: 1000,
+            annualSpending: 40000,
+            returnRate: 7,
+            withdrawalRate: 4,
+            inflationRate: 3
+          });
+
+          const [fireInputs, setFireInputs] = useState({
+            currentAge: 30,
+            currentNetWorth: 100000,
             desiredAnnualIncome: 40000,
             contributionPeriods: [
               { startAge: 30, endAge: 65, monthlyAmount: 2000 }
             ],
-returnRate: 7,
-withdrawalRate: 4,
-            inflationRate: 3
+            returnRate: 7,
+            withdrawalRate: 4,
             inflationRate: 2
-});
+          });
 
           const addContributionPeriod = () => {
             const lastPeriod = fireInputs.contributionPeriods[fireInputs.contributionPeriods.length - 1];
@@ -45,22 +116,90 @@ withdrawalRate: 4,
             setFireInputs({ ...fireInputs, contributionPeriods: newPeriods });
           };
 
-const [coastInputs, setCoastInputs] = useState({
-currentAge: 30,
-retirementAge: 65,
-@@ -156,33 +179,68 @@
-};
+          const handleFireAgeChange = (setter, field) => (e) => {
+            const value = e.target.value.replace(/[$,%]/g, '').replace(/,/g, '');
+            if (value === '' || value === '-') {
+              setter(prev => ({ ...prev, [field]: value }));
+            } else {
+              const numValue = parseFloat(value);
+              if (!isNaN(numValue)) {
+                // Update current age and sync first contribution period start age
+                setter(prev => {
+                  const newContributionPeriods = [...prev.contributionPeriods];
+                  newContributionPeriods[0] = { ...newContributionPeriods[0], startAge: numValue };
+                  return { ...prev, [field]: numValue, contributionPeriods: newContributionPeriods };
+                });
+              }
+            }
+          };
 
-const calculateFIRE = () => {
-            const annualSavings = fireInputs.annualIncome * (fireInputs.savingsRate / 100);
-            const fireNumber = fireInputs.annualExpenses * (100 / fireInputs.withdrawalRate);
-            const currentSavings = fireInputs.currentSavings;
+          const [coastInputs, setCoastInputs] = useState({
+            currentAge: 30,
+            retirementAge: 65,
+            currentSavings: 100000,
+            monthlyContribution: 0,
+            annualSpending: 40000,
+            returnRate: 7,
+            withdrawalRate: 4,
+            inflationRate: 3
+          });
+
+          const formatNumberWithCommas = (value) => {
+            if (value === '' || value === '-' || value === undefined || value === null) return '';
+            const num = typeof value === 'string' ? value.replace(/,/g, '') : value.toString();
+            const parts = num.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return parts.join('.');
+          };
+
+          const handleInputChange = (setter, field) => (e) => {
+            const value = e.target.value.replace(/[$,%]/g, '').replace(/,/g, '');
+            if (value === '' || value === '-') {
+              setter(prev => ({ ...prev, [field]: value }));
+            } else {
+              const numValue = parseFloat(value);
+              if (!isNaN(numValue)) {
+                setter(prev => ({ ...prev, [field]: numValue }));
+              }
+            }
+          };
+
+          const calculateRetirement = () => {
+            const years = retirementInputs.retirementAge - retirementInputs.currentAge;
+            const monthlyRate = retirementInputs.returnRate / 100 / 12;
+            const months = years * 12;
+            
+            const futureValue = retirementInputs.currentSavings * Math.pow(1 + monthlyRate, months) +
+              retirementInputs.monthlyContribution * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+            
+            const inflationAdjustedValue = futureValue / Math.pow(1 + retirementInputs.inflationRate / 100, years);
+            
+            const chartData = [];
+            for (let year = 0; year <= years; year++) {
+              const monthsElapsed = year * 12;
+              const balance = retirementInputs.currentSavings * Math.pow(1 + monthlyRate, monthsElapsed) +
+                retirementInputs.monthlyContribution * ((Math.pow(1 + monthlyRate, monthsElapsed) - 1) / monthlyRate);
+              chartData.push({
+                year: retirementInputs.currentAge + year,
+                balance: balance,
+                contributions: retirementInputs.currentSavings + (retirementInputs.monthlyContribution * monthsElapsed)
+              });
+            }
+            
+            return {
+              futureValue: futureValue,
+              inflationAdjustedValue: inflationAdjustedValue,
+              totalContributions: retirementInputs.currentSavings + (retirementInputs.monthlyContribution * months),
+              investmentGains: futureValue - (retirementInputs.currentSavings + retirementInputs.monthlyContribution * months),
+              chartData: chartData
+            };
+          };
+
+          const calculateFIRE = () => {
             const fireNumber = fireInputs.desiredAnnualIncome * (100 / fireInputs.withdrawalRate);
             const currentNetWorth = fireInputs.currentNetWorth;
-
-let years = 0;
-            let balance = currentSavings;
-            const chartData = [{ year: fireInputs.currentAge, balance: currentSavings }];
+            
+            let years = 0;
             let balance = currentNetWorth;
             let totalContributions = 0;
             const yearlyData = [];
@@ -72,9 +211,8 @@ let years = 0;
               balance: currentNetWorth,
               fireNumber: fireNumber
             });
-
-while (balance < fireNumber && years < 100) {
-              balance = balance * (1 + fireInputs.returnRate / 100) + annualSavings;
+            
+            while (balance < fireNumber && years < 100) {
               const currentAge = fireInputs.currentAge + years;
               
               // Find applicable contribution for this age
@@ -91,65 +229,335 @@ while (balance < fireNumber && years < 100) {
               
               const investmentGains = balance * (fireInputs.returnRate / 100);
               balance = balance + investmentGains + annualContribution;
-years++;
-              chartData.push({ 
-                year: fireInputs.currentAge + years, 
+              years++;
               
               yearlyData.push({
                 year: fireInputs.currentAge + years,
                 age: fireInputs.currentAge + years,
                 contributions: totalContributions,
-balance: balance,
-                fireNumber: fireNumber 
+                balance: balance,
                 fireNumber: fireNumber
-});
-}
-
+              });
+            }
+            
             const totalInterest = balance - currentNetWorth - totalContributions;
-const inflationAdjustedFireNumber = fireNumber / Math.pow(1 + fireInputs.inflationRate / 100, years);
+            
+            // Apply inflation to the FIRE number and desired income
+            const inflationAdjustedFireNumber = fireNumber / Math.pow(1 + fireInputs.inflationRate / 100, years);
+            const inflationAdjustedDesiredIncome = fireInputs.desiredAnnualIncome / Math.pow(1 + fireInputs.inflationRate / 100, years);
+            
+            // Calculate income at FIRE (not inflation-adjusted - this is the actual income they'll get)
             const monthlyIncome = fireNumber * (fireInputs.withdrawalRate / 100) / 12;
             const annualIncome = fireNumber * (fireInputs.withdrawalRate / 100);
-
-return {
-fireNumber: fireNumber,
-inflationAdjustedFireNumber: inflationAdjustedFireNumber,
-yearsToFIRE: years,
-fireAge: fireInputs.currentAge + years,
-              currentProgress: (currentSavings / fireNumber) * 100,
-              chartData: chartData
+            
+            // Calculate inflation-adjusted income (in today's dollars)
+            const inflationAdjustedMonthlyIncome = inflationAdjustedFireNumber * (fireInputs.withdrawalRate / 100) / 12;
+            const inflationAdjustedAnnualIncome = inflationAdjustedFireNumber * (fireInputs.withdrawalRate / 100);
+            
+            return {
+              fireNumber: fireNumber,
+              inflationAdjustedFireNumber: inflationAdjustedFireNumber,
+              yearsToFIRE: years,
+              fireAge: fireInputs.currentAge + years,
               currentProgress: (currentNetWorth / fireNumber) * 100,
               totalContributions: totalContributions,
               totalInterest: totalInterest,
               finalAmount: balance,
               monthlyIncome: monthlyIncome,
               annualIncome: annualIncome,
+              inflationAdjustedMonthlyIncome: inflationAdjustedMonthlyIncome,
+              inflationAdjustedAnnualIncome: inflationAdjustedAnnualIncome,
               yearlyData: yearlyData,
               chartData: yearlyData
-};
-};
+            };
+          };
 
-@@ -472,215 +530,321 @@
-{activeTab === 'fire' && (
-<div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
-<h2 className="text-2xl font-bold text-gray-800 mb-6">FIRE Calculator</h2>
+          const calculateCoastFIRE = () => {
+            const fireNumber = coastInputs.annualSpending * (100 / coastInputs.withdrawalRate);
+            const years = coastInputs.retirementAge - coastInputs.currentAge;
+            
+            const monthlyRate = coastInputs.returnRate / 100 / 12;
+            const months = years * 12;
+            
+            const coastFireNumberNoContributions = fireNumber / Math.pow(1 + coastInputs.returnRate / 100, years);
+            
+            const futureValueWithContributions = coastInputs.currentSavings * Math.pow(1 + monthlyRate, months) +
+              coastInputs.monthlyContribution * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+            
+            let yearsToCoastFire = 0;
+            let currentBalance = coastInputs.currentSavings;
+            
+            if (currentBalance < coastFireNumberNoContributions) {
+              while (currentBalance < coastFireNumberNoContributions && yearsToCoastFire < 100) {
+                currentBalance = currentBalance * (1 + coastInputs.returnRate / 100) + 
+                  (coastInputs.monthlyContribution * 12);
+                yearsToCoastFire++;
+              }
+            }
+            
+            const chartData = [];
+            for (let year = 0; year <= years; year++) {
+              const monthsElapsed = year * 12;
+              const balanceWithContributions = coastInputs.currentSavings * Math.pow(1 + monthlyRate, monthsElapsed) +
+                coastInputs.monthlyContribution * ((Math.pow(1 + monthlyRate, monthsElapsed) - 1) / monthlyRate);
+              const balanceCoasting = coastInputs.currentSavings * Math.pow(1 + coastInputs.returnRate / 100, year);
+              
+              chartData.push({
+                year: coastInputs.currentAge + year,
+                withContributions: balanceWithContributions,
+                coasting: balanceCoasting,
+                fireNumber: fireNumber
+              });
+            }
+            
+            const inflationAdjustedFireNumber = fireNumber / Math.pow(1 + coastInputs.inflationRate / 100, years);
+            
+            return {
+              coastFireNumber: coastFireNumberNoContributions,
+              fireNumber: fireNumber,
+              inflationAdjustedFireNumber: inflationAdjustedFireNumber,
+              futureValueWithContributions: futureValueWithContributions,
+              hasReachedCoastFIRE: coastInputs.currentSavings >= coastFireNumberNoContributions,
+              percentToCoastFIRE: (coastInputs.currentSavings / coastFireNumberNoContributions) * 100,
+              willReachWithContributions: futureValueWithContributions >= fireNumber,
+              yearsToCoastFire: yearsToCoastFire,
+              coastFireAge: coastInputs.currentAge + yearsToCoastFire,
+              chartData: chartData
+            };
+          };
+
+          const retirementResults = calculateRetirement();
+          const fireResults = calculateFIRE();
+          const coastResults = calculateCoastFIRE();
+
+          const formatCurrency = (num) => {
+            if (num === '' || num === '-') return '$0';
+            return new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0
+            }).format(num);
+          };
+
+          const retirementChartData = {
+            labels: retirementResults.chartData.map(d => d.year),
+            datasets: [
+              {
+                label: 'Total Balance',
+                data: retirementResults.chartData.map(d => d.balance),
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: true,
+                tension: 0.4
+              },
+              {
+                label: 'Total Contributions',
+                data: retirementResults.chartData.map(d => d.contributions),
+                borderColor: 'rgb(34, 197, 94)',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                fill: true,
+                tension: 0.4
+              }
+            ]
+          };
+
+          const fireChartData = {
+            labels: fireResults.chartData.map(d => d.year),
+            datasets: [
+              {
+                label: 'Portfolio Balance',
+                data: fireResults.chartData.map(d => d.balance),
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: true,
+                tension: 0.4
+              },
+              {
+                label: 'FIRE Number',
+                data: fireResults.chartData.map(d => d.fireNumber),
+                borderColor: 'rgb(239, 68, 68)',
+                borderDash: [5, 5],
+                fill: false,
+                tension: 0
+              }
+            ]
+          };
+
+          const coastChartData = {
+            labels: coastResults.chartData.map(d => d.year),
+            datasets: [
+              {
+                label: 'With Monthly Contributions',
+                data: coastResults.chartData.map(d => d.withContributions),
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: true,
+                tension: 0.4
+              },
+              {
+                label: 'Coasting (No Contributions)',
+                data: coastResults.chartData.map(d => d.coasting),
+                borderColor: 'rgb(168, 85, 247)',
+                backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                fill: true,
+                tension: 0.4
+              },
+              {
+                label: 'FIRE Number',
+                data: coastResults.chartData.map(d => d.fireNumber),
+                borderColor: 'rgb(239, 68, 68)',
+                borderDash: [5, 5],
+                fill: false,
+                tension: 0
+              }
+            ]
+          };
+
+          const chartOptions = {
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top'
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return context.dataset.label + ': ' + formatCurrency(context.parsed.y);
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function(value) {
+                    if (value >= 1000000) {
+                      return '$' + (value / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                    } else if (value >= 1000) {
+                      return '$' + (value / 1000).toFixed(0) + 'k';
+                    } else {
+                      return '$' + value.toFixed(0);
+                    }
+                  }
+                }
+              }
+            }
+          };
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
+              <div className="max-w-6xl mx-auto">
+                <header className="text-center mb-8">
+                  <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">FIRE Calculators</h1>
+                  <p className="text-gray-600 text-lg">Plan your path to financial independence</p>
+                </header>
+
+                <div className="flex flex-wrap gap-2 mb-6 bg-white rounded-lg p-2 shadow-md">
+                  <button onClick={() => setActiveTab('retirement')} className={`flex-1 min-w-fit px-4 py-3 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${activeTab === 'retirement' ? 'bg-blue-500 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                    <Calculator size={20} />
+                    Retirement
+                  </button>
+                  <button onClick={() => setActiveTab('fire')} className={`flex-1 min-w-fit px-4 py-3 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${activeTab === 'fire' ? 'bg-blue-500 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                    <TrendingUp size={20} />
+                    FIRE
+                  </button>
+                  <button onClick={() => setActiveTab('coast')} className={`flex-1 min-w-fit px-4 py-3 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${activeTab === 'coast' ? 'bg-blue-500 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                    <Anchor size={20} />
+                    Coast FIRE
+                  </button>
+                </div>
+
+                {activeTab === 'retirement' && (
+                  <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6">Retirement Calculator</h2>
                     <div className="grid lg:grid-cols-2 gap-6 mb-6">
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Current Age</label>
-                          <input type="text" value={formatNumberWithCommas(fireInputs.currentAge)} onChange={handleInputChange(setFireInputs, 'currentAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          <input type="text" value={formatNumberWithCommas(retirementInputs.currentAge)} onChange={handleInputChange(setRetirementInputs, 'currentAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Target Retirement Age</label>
+                          <input type="text" value={formatNumberWithCommas(retirementInputs.retirementAge)} onChange={handleInputChange(setRetirementInputs, 'retirementAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Current Invested</label>
                           <div className="relative">
                             <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input type="text" value={formatNumberWithCommas(fireInputs.currentSavings)} onChange={handleInputChange(setFireInputs, 'currentSavings')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.currentSavings)} onChange={handleInputChange(setRetirementInputs, 'currentSavings')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Annual Income</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Contribution</label>
                           <div className="relative">
                             <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input type="text" value={formatNumberWithCommas(fireInputs.annualIncome)} onChange={handleInputChange(setFireInputs, 'annualIncome')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.monthlyContribution)} onChange={handleInputChange(setRetirementInputs, 'monthlyContribution')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Annual Spending in Retirement</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.annualSpending)} onChange={handleInputChange(setRetirementInputs, 'annualSpending')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.returnRate)} onChange={handleInputChange(setRetirementInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Safe Withdrawal Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.withdrawalRate)} onChange={handleInputChange(setRetirementInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(retirementInputs.inflationRate)} onChange={handleInputChange(setRetirementInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">Results</h3>
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Projected Retirement Savings</p>
+                            <p className="text-3xl font-bold text-blue-600">{formatCurrency(retirementResults.futureValue)}</p>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Inflation-Adjusted Value</p>
+                            <p className="text-2xl font-bold text-purple-600">{formatCurrency(retirementResults.inflationAdjustedValue)}</p>
+                            <p className="text-xs text-gray-500 mt-1">In today's dollars</p>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Total Contributions</p>
+                            <p className="text-2xl font-bold text-gray-800">{formatCurrency(retirementResults.totalContributions)}</p>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Investment Gains</p>
+                            <p className="text-2xl font-bold text-green-600">{formatCurrency(retirementResults.investmentGains)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-6 shadow-lg">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">Growth Projection</h3>
+                      <ChartComponent chartRef={retirementChartRef} type="line" data={retirementChartData} options={chartOptions} />
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'fire' && (
+                  <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6">FIRE Calculator</h2>
                     
                     <div className="grid lg:grid-cols-3 gap-6 mb-8">
                       <div className="lg:col-span-2 space-y-6">
@@ -158,7 +566,7 @@ fireAge: fireInputs.currentAge + years,
                           <div className="grid md:grid-cols-2 gap-4">
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">Current Age</label>
-                              <input type="text" value={formatNumberWithCommas(fireInputs.currentAge)} onChange={handleInputChange(setFireInputs, 'currentAge')} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                              <input type="text" value={formatNumberWithCommas(fireInputs.currentAge)} onChange={handleFireAgeChange(setFireInputs, 'currentAge')} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">Current Net Worth</label>
@@ -167,13 +575,8 @@ fireAge: fireInputs.currentAge + years,
                                 <input type="text" value={formatNumberWithCommas(fireInputs.currentNetWorth)} onChange={handleInputChange(setFireInputs, 'currentNetWorth')} className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                               </div>
                             </div>
-</div>
-</div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Annual Expenses</label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input type="text" value={formatNumberWithCommas(fireInputs.annualExpenses)} onChange={handleInputChange(setFireInputs, 'annualExpenses')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
 
                         <div className="bg-gray-50 rounded-lg p-5">
                           <h3 className="text-lg font-semibold text-gray-800 mb-4">Retirement Goals</h3>
@@ -183,13 +586,8 @@ fireAge: fireInputs.currentAge + years,
                               <span className="absolute left-3 top-2 text-gray-500 text-sm">$</span>
                               <input type="text" value={formatNumberWithCommas(fireInputs.desiredAnnualIncome)} onChange={handleInputChange(setFireInputs, 'desiredAnnualIncome')} className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
-</div>
-</div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Savings Rate</label>
-                          <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(fireInputs.savingsRate)} onChange={handleInputChange(setFireInputs, 'savingsRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
 
                         <div className="bg-gray-50 rounded-lg p-5">
                           <div className="flex items-center justify-between mb-4">
@@ -221,13 +619,8 @@ fireAge: fireInputs.currentAge + years,
                                 </div>
                               </div>
                             ))}
-</div>
-</div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return Rate</label>
-                          <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(fireInputs.returnRate)} onChange={handleInputChange(setFireInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
 
                         <div className="bg-gray-50 rounded-lg p-5">
                           <h3 className="text-lg font-semibold text-gray-800 mb-4">Assumptions</h3>
@@ -253,51 +646,46 @@ fireAge: fireInputs.currentAge + years,
                                 <span className="absolute right-3 top-2 text-gray-500 text-sm">%</span>
                               </div>
                             </div>
-</div>
-</div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Safe Withdrawal Rate</label>
-                          <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(fireInputs.withdrawalRate)} onChange={handleInputChange(setFireInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="space-y-4">
-                        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg p-6 text-white">
+                        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg p-6 text-white text-center">
                           <p className="text-sm opacity-90 mb-2">You'll reach FIRE in</p>
                           <p className="text-5xl font-bold mb-1">{fireResults.yearsToFIRE}</p>
                           <p className="text-lg opacity-90">years</p>
                           <div className="mt-4 pt-4 border-t border-white border-opacity-20">
                             <p className="text-sm opacity-90">FIRE Age</p>
                             <p className="text-2xl font-bold">{fireResults.fireAge} years old</p>
-</div>
-</div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
-                          <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(fireInputs.inflationRate)} onChange={handleInputChange(setFireInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
 
                         <div className="bg-white border-2 border-gray-200 rounded-lg p-5">
-                          <h3 className="text-sm font-semibold text-gray-600 mb-4">Summary</h3>
+                          <h3 className="text-sm font-semibold text-gray-600 mb-4 text-center">Summary</h3>
                           <div className="space-y-3">
-                            <div>
+                            <div className="text-center">
                               <p className="text-xs text-gray-500 mb-0.5">Total Final Amount</p>
                               <p className="text-2xl font-bold text-gray-800">{formatCurrency(fireResults.finalAmount)}</p>
                             </div>
-                            <div className="pt-3 border-t border-gray-200">
+                            <div className="pt-3 border-t border-gray-200 text-center">
                               <p className="text-xs text-gray-500 mb-0.5">Total Contributions</p>
                               <p className="text-lg font-semibold text-blue-600">{formatCurrency(fireResults.totalContributions)}</p>
                             </div>
-                            <div>
+                            <div className="text-center">
                               <p className="text-xs text-gray-500 mb-0.5">Total Interest Earned</p>
                               <p className="text-lg font-semibold text-green-600">{formatCurrency(fireResults.totalInterest)}</p>
                             </div>
-                            <div className="pt-3 border-t border-gray-200">
+                            <div className="pt-3 border-t border-gray-200 text-center">
                               <p className="text-xs text-gray-500 mb-0.5">FIRE Number</p>
                               <p className="text-lg font-semibold text-gray-800">{formatCurrency(fireResults.fireNumber)}</p>
                             </div>
-                            <div>
+                            <div className="text-center">
+                              <p className="text-xs text-gray-500 mb-0.5">Inflation-Adjusted FIRE</p>
+                              <p className="text-base font-semibold text-purple-600">{formatCurrency(fireResults.inflationAdjustedFireNumber)}</p>
+                              <p className="text-xs text-gray-400 mt-0.5">In today's dollars</p>
+                            </div>
+                            <div className="text-center">
                               <p className="text-xs text-gray-500 mb-1">Current Progress</p>
                               <div className="flex items-center gap-2">
                                 <div className="flex-1 bg-gray-200 rounded-full h-2">
@@ -306,53 +694,33 @@ fireAge: fireInputs.currentAge + years,
                                 <span className="text-xs font-bold text-gray-800">{fireResults.currentProgress.toFixed(0)}%</span>
                               </div>
                             </div>
-</div>
-</div>
-                      </div>
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">Results</h3>
-                        <div className="space-y-4">
-                          <div className="bg-white rounded-lg p-4 shadow">
-                            <p className="text-sm text-gray-600 mb-1">FIRE Number</p>
-                            <p className="text-3xl font-bold text-blue-600">{formatCurrency(fireResults.fireNumber)}</p>
                           </div>
-                          <div className="bg-white rounded-lg p-4 shadow">
-                            <p className="text-sm text-gray-600 mb-1">Inflation-Adjusted FIRE Number</p>
-                            <p className="text-2xl font-bold text-purple-600">{formatCurrency(fireResults.inflationAdjustedFireNumber)}</p>
-                            <p className="text-xs text-gray-500 mt-1">In today's dollars</p>
-                          </div>
-                          <div className="bg-white rounded-lg p-4 shadow">
-                            <p className="text-sm text-gray-600 mb-1">Years to FIRE</p>
-                            <p className="text-2xl font-bold text-gray-800">{fireResults.yearsToFIRE} years</p>
-                          </div>
-                          <div className="bg-white rounded-lg p-4 shadow">
-                            <p className="text-sm text-gray-600 mb-1">FIRE Age</p>
-                            <p className="text-2xl font-bold text-gray-800">{fireResults.fireAge} years old</p>
-                          </div>
-                          <div className="bg-white rounded-lg p-4 shadow">
-                            <p className="text-sm text-gray-600 mb-1">Current Progress</p>
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 bg-gray-200 rounded-full h-3">
-                                <div className="bg-green-500 h-3 rounded-full transition-all" style={{ width: `${Math.min(fireResults.currentProgress, 100)}%` }}></div>
-                              </div>
-                              <span className="text-lg font-bold text-gray-800">{fireResults.currentProgress.toFixed(1)}%</span>
+                        </div>
 
                         <div className="bg-green-50 border-2 border-green-200 rounded-lg p-5">
-                          <h3 className="text-sm font-semibold text-green-800 mb-3">Expected Income at FIRE</h3>
+                          <h3 className="text-sm font-semibold text-green-800 mb-3 text-center">Expected Income at FIRE</h3>
                           <div className="space-y-2">
-                            <div>
-                              <p className="text-xs text-green-700 mb-0.5">Annual Income</p>
+                            <div className="text-center">
+                              <p className="text-xs text-green-700 mb-0.5">Annual Income (Nominal)</p>
                               <p className="text-xl font-bold text-green-800">{formatCurrency(fireResults.annualIncome)}</p>
                             </div>
-                            <div>
-                              <p className="text-xs text-green-700 mb-0.5">Monthly Income</p>
+                            <div className="text-center">
+                              <p className="text-xs text-green-700 mb-0.5">Monthly Income (Nominal)</p>
                               <p className="text-lg font-semibold text-green-800">{formatCurrency(fireResults.monthlyIncome)}</p>
-</div>
-                            <p className="text-xs text-green-600 mt-2">Based on {fireInputs.withdrawalRate}% withdrawal rate</p>
-</div>
-</div>
-</div>
-</div>
+                            </div>
+                            <div className="pt-2 border-t border-green-200 text-center">
+                              <p className="text-xs text-green-700 mb-0.5">Annual Income (Today's $)</p>
+                              <p className="text-base font-semibold text-green-700">{formatCurrency(fireResults.inflationAdjustedAnnualIncome)}</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-xs text-green-700 mb-0.5">Monthly Income (Today's $)</p>
+                              <p className="text-base font-semibold text-green-700">{formatCurrency(fireResults.inflationAdjustedMonthlyIncome)}</p>
+                            </div>
+                            <p className="text-xs text-green-600 mt-2 text-center">Based on {fireInputs.withdrawalRate}% withdrawal rate</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
                       <div className="bg-gray-100 px-6 py-3 border-b">
@@ -397,128 +765,127 @@ fireAge: fireInputs.currentAge + years,
                       )}
                     </div>
 
-<div className="bg-white rounded-lg p-6 shadow-lg">
-                      <h3 className="text-lg font-bold text-gray-800 mb-4">Path to FIRE</h3>
+                    <div className="bg-white rounded-lg p-6 shadow-lg">
                       <h3 className="text-lg font-bold text-gray-800 mb-4">Portfolio Growth</h3>
-<ChartComponent chartRef={fireChartRef} type="line" data={fireChartData} options={chartOptions} />
-</div>
-</div>
-)}
+                      <ChartComponent chartRef={fireChartRef} type="line" data={fireChartData} options={chartOptions} />
+                    </div>
+                  </div>
+                )}
 
-{activeTab === 'coast' && (
-<div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
-<h2 className="text-2xl font-bold text-gray-800 mb-6">Coast FIRE Calculator</h2>
-<div className="grid lg:grid-cols-2 gap-6 mb-6">
-<div className="space-y-4">
-<div>
-<label className="block text-sm font-medium text-gray-700 mb-1">Current Age</label>
-<input type="text" value={formatNumberWithCommas(coastInputs.currentAge)} onChange={handleInputChange(setCoastInputs, 'currentAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-</div>
-<div>
-<label className="block text-sm font-medium text-gray-700 mb-1">Target Retirement Age</label>
-<input type="text" value={formatNumberWithCommas(coastInputs.retirementAge)} onChange={handleInputChange(setCoastInputs, 'retirementAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-</div>
-<div>
-<label className="block text-sm font-medium text-gray-700 mb-1">Current Invested</label>
-<div className="relative">
-<span className="absolute left-3 top-2 text-gray-500">$</span>
-<input type="text" value={formatNumberWithCommas(coastInputs.currentSavings)} onChange={handleInputChange(setCoastInputs, 'currentSavings')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-</div>
-</div>
-<div>
-<label className="block text-sm font-medium text-gray-700 mb-1">Monthly Contribution</label>
-<div className="relative">
-<span className="absolute left-3 top-2 text-gray-500">$</span>
-<input type="text" value={formatNumberWithCommas(coastInputs.monthlyContribution)} onChange={handleInputChange(setCoastInputs, 'monthlyContribution')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-</div>
-</div>
-<div>
-<label className="block text-sm font-medium text-gray-700 mb-1">Annual Spending in Retirement</label>
-<div className="relative">
-<span className="absolute left-3 top-2 text-gray-500">$</span>
-<input type="text" value={formatNumberWithCommas(coastInputs.annualSpending)} onChange={handleInputChange(setCoastInputs, 'annualSpending')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-</div>
-</div>
-<div>
-<label className="block text-sm font-medium text-gray-700 mb-1">Expected Return Rate</label>
-<div className="relative">
-<input type="text" value={formatNumberWithCommas(coastInputs.returnRate)} onChange={handleInputChange(setCoastInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-<span className="absolute right-3 top-2 text-gray-500">%</span>
-</div>
-</div>
-<div>
-<label className="block text-sm font-medium text-gray-700 mb-1">Safe Withdrawal Rate</label>
-<div className="relative">
-<input type="text" value={formatNumberWithCommas(coastInputs.withdrawalRate)} onChange={handleInputChange(setCoastInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-<span className="absolute right-3 top-2 text-gray-500">%</span>
-</div>
-</div>
-<div>
-<label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
-<div className="relative">
-<input type="text" value={formatNumberWithCommas(coastInputs.inflationRate)} onChange={handleInputChange(setCoastInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-<span className="absolute right-3 top-2 text-gray-500">%</span>
-</div>
-</div>
-</div>
-<div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6">
-<h3 className="text-xl font-bold text-gray-800 mb-4">Results</h3>
-<div className="space-y-4">
-<div className="bg-white rounded-lg p-4 shadow">
-<p className="text-sm text-gray-600 mb-1">Coast FIRE Number</p>
-<p className="text-3xl font-bold text-blue-600">{formatCurrency(coastResults.coastFireNumber)}</p>
-<p className="text-xs text-gray-500 mt-1">Amount needed today to coast to retirement</p>
-</div>
-<div className="bg-white rounded-lg p-4 shadow">
-<p className="text-sm text-gray-600 mb-1">Full FIRE Number</p>
-<p className="text-2xl font-bold text-gray-800">{formatCurrency(coastResults.fireNumber)}</p>
-<p className="text-xs text-gray-500 mt-1">Total needed at retirement age</p>
-</div>
-<div className="bg-white rounded-lg p-4 shadow">
-<p className="text-sm text-gray-600 mb-1">Inflation-Adjusted FIRE Number</p>
-<p className="text-2xl font-bold text-purple-600">{formatCurrency(coastResults.inflationAdjustedFireNumber)}</p>
-<p className="text-xs text-gray-500 mt-1">In today's dollars</p>
-</div>
-{!coastResults.hasReachedCoastFIRE && coastResults.yearsToCoastFire < 100 && (
-<div className="bg-white rounded-lg p-4 shadow">
-<p className="text-sm text-gray-600 mb-1">Years to Coast FIRE</p>
-<p className="text-2xl font-bold text-orange-600">{coastResults.yearsToCoastFire} years</p>
-<p className="text-xs text-gray-500 mt-1">At age {coastResults.coastFireAge}</p>
-</div>
-)}
-<div className={`rounded-lg p-4 shadow ${coastResults.hasReachedCoastFIRE ? 'bg-green-100 border-2 border-green-400' : 'bg-white'}`}>
-<p className="text-sm text-gray-600 mb-1">Status</p>
-<p className={`text-2xl font-bold ${coastResults.hasReachedCoastFIRE ? 'text-green-600' : 'text-orange-600'}`}>{coastResults.hasReachedCoastFIRE ? '🎉 You reached Coast FIRE!' : 'Not yet at Coast FIRE'}</p>
-</div>
-<div className="bg-white rounded-lg p-4 shadow">
-<p className="text-sm text-gray-600 mb-1">Progress to Coast FIRE</p>
-<div className="flex items-center gap-2">
-<div className="flex-1 bg-gray-200 rounded-full h-3">
-<div className="bg-blue-500 h-3 rounded-full transition-all" style={{ width: `${Math.min(coastResults.percentToCoastFIRE, 100)}%` }}></div>
-</div>
-<span className="text-lg font-bold text-gray-800">{coastResults.percentToCoastFIRE.toFixed(1)}%</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div className="bg-white rounded-lg p-6 shadow-lg">
-<h3 className="text-lg font-bold text-gray-800 mb-4">Coast FIRE Projection</h3>
-<ChartComponent chartRef={coastChartRef} type="line" data={coastChartData} options={chartOptions} />
-</div>
-</div>
-)}
+                {activeTab === 'coast' && (
+                  <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6">Coast FIRE Calculator</h2>
+                    <div className="grid lg:grid-cols-2 gap-6 mb-6">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Current Age</label>
+                          <input type="text" value={formatNumberWithCommas(coastInputs.currentAge)} onChange={handleInputChange(setCoastInputs, 'currentAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Target Retirement Age</label>
+                          <input type="text" value={formatNumberWithCommas(coastInputs.retirementAge)} onChange={handleInputChange(setCoastInputs, 'retirementAge')} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Current Invested</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(coastInputs.currentSavings)} onChange={handleInputChange(setCoastInputs, 'currentSavings')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Contribution</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(coastInputs.monthlyContribution)} onChange={handleInputChange(setCoastInputs, 'monthlyContribution')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Annual Spending in Retirement</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                            <input type="text" value={formatNumberWithCommas(coastInputs.annualSpending)} onChange={handleInputChange(setCoastInputs, 'annualSpending')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(coastInputs.returnRate)} onChange={handleInputChange(setCoastInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Safe Withdrawal Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(coastInputs.withdrawalRate)} onChange={handleInputChange(setCoastInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
+                          <div className="relative">
+                            <input type="text" value={formatNumberWithCommas(coastInputs.inflationRate)} onChange={handleInputChange(setCoastInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <span className="absolute right-3 top-2 text-gray-500">%</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">Results</h3>
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Coast FIRE Number</p>
+                            <p className="text-3xl font-bold text-blue-600">{formatCurrency(coastResults.coastFireNumber)}</p>
+                            <p className="text-xs text-gray-500 mt-1">Amount needed today to coast to retirement</p>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Full FIRE Number</p>
+                            <p className="text-2xl font-bold text-gray-800">{formatCurrency(coastResults.fireNumber)}</p>
+                            <p className="text-xs text-gray-500 mt-1">Total needed at retirement age</p>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Inflation-Adjusted FIRE Number</p>
+                            <p className="text-2xl font-bold text-purple-600">{formatCurrency(coastResults.inflationAdjustedFireNumber)}</p>
+                            <p className="text-xs text-gray-500 mt-1">In today's dollars</p>
+                          </div>
+                          {!coastResults.hasReachedCoastFIRE && coastResults.yearsToCoastFire < 100 && (
+                            <div className="bg-white rounded-lg p-4 shadow">
+                              <p className="text-sm text-gray-600 mb-1">Years to Coast FIRE</p>
+                              <p className="text-2xl font-bold text-orange-600">{coastResults.yearsToCoastFire} years</p>
+                              <p className="text-xs text-gray-500 mt-1">At age {coastResults.coastFireAge}</p>
+                            </div>
+                          )}
+                          <div className={`rounded-lg p-4 shadow ${coastResults.hasReachedCoastFIRE ? 'bg-green-100 border-2 border-green-400' : 'bg-white'}`}>
+                            <p className="text-sm text-gray-600 mb-1">Status</p>
+                            <p className={`text-2xl font-bold ${coastResults.hasReachedCoastFIRE ? 'text-green-600' : 'text-orange-600'}`}>{coastResults.hasReachedCoastFIRE ? '🎉 You reached Coast FIRE!' : 'Not yet at Coast FIRE'}</p>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 shadow">
+                            <p className="text-sm text-gray-600 mb-1">Progress to Coast FIRE</p>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 bg-gray-200 rounded-full h-3">
+                                <div className="bg-blue-500 h-3 rounded-full transition-all" style={{ width: `${Math.min(coastResults.percentToCoastFIRE, 100)}%` }}></div>
+                              </div>
+                              <span className="text-lg font-bold text-gray-800">{coastResults.percentToCoastFIRE.toFixed(1)}%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-6 shadow-lg">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">Coast FIRE Projection</h3>
+                      <ChartComponent chartRef={coastChartRef} type="line" data={coastChartData} options={chartOptions} />
+                    </div>
+                  </div>
+                )}
 
-<footer className="mt-8 text-center text-gray-600 text-sm">
-<p>Open source financial calculators • Made with React</p>
-<p className="mt-1 text-xs">Results are estimates. Consult with a financial advisor for personalized advice.</p>
-</footer>
-</div>
-</div>
-);
-};
+                <footer className="mt-8 text-center text-gray-600 text-sm">
+                  <p>Open source financial calculators • Made with React</p>
+                  <p className="mt-1 text-xs">Results are estimates. Consult with a financial advisor for personalized advice.</p>
+                </footer>
+              </div>
+            </div>
+          );
+        };
 
-ReactDOM.render(<FinanceCalculators />, document.getElementById('root'));
-</script>
+        ReactDOM.render(<FinanceCalculators />, document.getElementById('root'));
+    </script>
 </body>
 </html>
