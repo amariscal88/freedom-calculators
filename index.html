@@ -154,16 +154,17 @@
           };
 
           const handleInputChange = (setter, field) => (e) => {
-            const value = e.target.value.replace(/[$,%]/g, '').replace(/,/g, '');
-            if (value === '' || value === '-') {
-              setter(prev => ({ ...prev, [field]: value }));
-            } else {
-              const numValue = parseFloat(value);
-              if (!isNaN(numValue)) {
-                setter(prev => ({ ...prev, [field]: numValue }));
-              }
-            }
-          };
+  const value = e.target.value.replace(/[$,%]/g, '').replace(/,/g, '');
+  if (value === '' || value === '-' || value.endsWith('.')) {
+    // Allow empty, negative sign, or trailing decimal point
+    setter(prev => ({ ...prev, [field]: value }));
+  } else {
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue)) {
+      setter(prev => ({ ...prev, [field]: numValue }));
+    }
+  }
+};
 
           const calculateRetirement = () => {
             const years = retirementInputs.retirementAge - retirementInputs.currentAge;
