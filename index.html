@@ -501,27 +501,27 @@
                           <label className="block text-sm font-medium text-gray-700 mb-1">Annual Spending in Retirement</label>
                           <div className="relative">
                             <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input type="text" value={formatNumberWithCommas(retirementInputs.annualSpending)} onChange={handleInputChange(setRetirementInputs, 'annualSpending')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={retirementInputs.annualSpending} onChange={handleInputChange(setRetirementInputs, 'annualSpending')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                           </div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return Rate</label>
                           <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(retirementInputs.returnRate)} onChange={handleInputChange(setRetirementInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={retirementInputs.returnRate} onChange={handleInputChange(setRetirementInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Safe Withdrawal Rate</label>
                           <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(retirementInputs.withdrawalRate)} onChange={handleInputChange(setRetirementInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={retirementInputs.withdrawalRate} onChange={handleInputChange(setRetirementInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
                           <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(retirementInputs.inflationRate)} onChange={handleInputChange(setRetirementInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={retirementInputs.inflationRate} onChange={handleInputChange(setRetirementInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
@@ -629,21 +629,21 @@
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return</label>
                               <div className="relative">
-                                <input type="text" value={formatNumberWithCommas(fireInputs.returnRate)} onChange={handleInputChange(setFireInputs, 'returnRate')} className="w-full pl-3 pr-7 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                <input type="text" value={fireInputs.returnRate} onChange={handleInputChange(setFireInputs, 'returnRate')} className="w-full pl-3 pr-7 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                                 <span className="absolute right-3 top-2 text-gray-500 text-sm">%</span>
                               </div>
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">Withdrawal Rate</label>
                               <div className="relative">
-                                <input type="text" value={formatNumberWithCommas(fireInputs.withdrawalRate)} onChange={handleInputChange(setFireInputs, 'withdrawalRate')} className="w-full pl-3 pr-7 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                <input type="text" value={fireInputs.withdrawalRate} onChange={handleInputChange(setFireInputs, 'withdrawalRate')} className="w-full pl-3 pr-7 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                                 <span className="absolute right-3 top-2 text-gray-500 text-sm">%</span>
                               </div>
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
                               <div className="relative">
-                                <input type="text" value={formatNumberWithCommas(fireInputs.inflationRate)} onChange={handleInputChange(setFireInputs, 'inflationRate')} className="w-full pl-3 pr-7 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                <input type="text" value={fireInputs.inflationRate} onChange={handleInputChange(setFireInputs, 'inflationRate')} className="w-full pl-3 pr-7 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                                 <span className="absolute right-3 top-2 text-gray-500 text-sm">%</span>
                               </div>
                             </div>
@@ -804,27 +804,27 @@
                           <label className="block text-sm font-medium text-gray-700 mb-1">Annual Spending in Retirement</label>
                           <div className="relative">
                             <span className="absolute left-3 top-2 text-gray-500">$</span>
-                            <input type="text" value={formatNumberWithCommas(coastInputs.annualSpending)} onChange={handleInputChange(setCoastInputs, 'annualSpending')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={coastInputs.annualSpending} onChange={handleInputChange(setCoastInputs, 'annualSpending')} className="w-full pl-7 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                           </div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return Rate</label>
                           <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(coastInputs.returnRate)} onChange={handleInputChange(setCoastInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={coastInputs.returnRate} onChange={handleInputChange(setCoastInputs, 'returnRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Safe Withdrawal Rate</label>
                           <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(coastInputs.withdrawalRate)} onChange={handleInputChange(setCoastInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={coastInputs.withdrawalRate} onChange={handleInputChange(setCoastInputs, 'withdrawalRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Inflation Rate</label>
                           <div className="relative">
-                            <input type="text" value={formatNumberWithCommas(coastInputs.inflationRate)} onChange={handleInputChange(setCoastInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="text" value={coastInputs.inflationRate} onChange={handleInputChange(setCoastInputs, 'inflationRate')} className="w-full pl-4 pr-7 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             <span className="absolute right-3 top-2 text-gray-500">%</span>
                           </div>
                         </div>
