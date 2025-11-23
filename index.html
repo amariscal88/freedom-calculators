@@ -73,26 +73,26 @@
           const coastChartRef = useRef(null);
 
           const [retirementInputs, setRetirementInputs] = useState({
-            currentAge: 30,
+            currentAge: 37,
             retirementAge: 65,
             currentSavings: 50000,
             monthlyContribution: 1000,
             annualSpending: 40000,
-            returnRate: 7,
+            returnRate: 8,
             withdrawalRate: 4,
             inflationRate: 3
           });
 
           const [fireInputs, setFireInputs] = useState({
-            currentAge: 30,
-            currentNetWorth: 100000,
-            desiredAnnualIncome: 40000,
+            currentAge: 37,
+            currentInvested: 700000,
+            desiredAnnualIncome: 100000,
             contributionPeriods: [
               { startAge: 30, endAge: 65, monthlyAmount: 2000 }
             ],
-            returnRate: 7,
+            returnRate: 8,
             withdrawalRate: 4,
-            inflationRate: 2
+            inflationRate: 3
           });
 
           const addContributionPeriod = () => {
@@ -135,12 +135,12 @@
           };
 
           const [coastInputs, setCoastInputs] = useState({
-            currentAge: 30,
+            currentAge: 37,
             retirementAge: 65,
-            currentSavings: 100000,
-            monthlyContribution: 0,
-            annualSpending: 40000,
-            returnRate: 7,
+            currentSavings: 700000,
+            monthlyContribution: 3000,
+            annualSpending: 100000,
+            returnRate: 8,
             withdrawalRate: 4,
             inflationRate: 3
           });
@@ -198,10 +198,10 @@
 
           const calculateFIRE = () => {
             const fireNumber = fireInputs.desiredAnnualIncome * (100 / fireInputs.withdrawalRate);
-            const currentNetWorth = fireInputs.currentNetWorth;
+            const currentInvested = fireInputs.currentInvested;
             
             let years = 0;
-            let balance = currentNetWorth;
+            let balance = currentInvested;
             let totalContributions = 0;
             const yearlyData = [];
             
@@ -209,7 +209,7 @@
               year: fireInputs.currentAge,
               age: fireInputs.currentAge,
               contributions: 0,
-              balance: currentNetWorth,
+              balance: currentInvested,
               fireNumber: fireNumber
             });
             
@@ -241,7 +241,7 @@
               });
             }
             
-            const totalInterest = balance - currentNetWorth - totalContributions;
+            const totalInterest = balance - currentInvested - totalContributions;
             
             // Apply inflation to the FIRE number and desired income
             const inflationAdjustedFireNumber = fireNumber / Math.pow(1 + fireInputs.inflationRate / 100, years);
@@ -260,7 +260,7 @@
               inflationAdjustedFireNumber: inflationAdjustedFireNumber,
               yearsToFIRE: years,
               fireAge: fireInputs.currentAge + years,
-              currentProgress: (currentNetWorth / fireNumber) * 100,
+              currentProgress: (currentInvested / fireNumber) * 100,
               totalContributions: totalContributions,
               totalInterest: totalInterest,
               finalAmount: balance,
@@ -573,7 +573,7 @@
                               <label className="block text-sm font-medium text-gray-700 mb-1">Current Invested</label>
                               <div className="relative">
                                 <span className="absolute left-3 top-2 text-gray-500 text-sm">$</span>
-                                <input type="text" value={formatNumberWithCommas(fireInputs.currentNetWorth)} onChange={handleInputChange(setFireInputs, 'currentNetWorth')} className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                <input type="text" value={formatNumberWithCommas(fireInputs.currentInvested)} onChange={handleInputChange(setFireInputs, 'currentInvested')} className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                               </div>
                             </div>
                           </div>
